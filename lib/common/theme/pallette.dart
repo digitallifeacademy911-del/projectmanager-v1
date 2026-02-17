@@ -6,4 +6,5 @@ class PalleteColor {
   static Color whiteWeak = Color(0XFF878787);
   static Color blueOpacity100 = Color(0xFF0024DA);
   static Color inputBackgroundColor = Color(0xFFE9E9E9);
+  static Color foregroundColor = Color(0xFF3F3F3F);
 }

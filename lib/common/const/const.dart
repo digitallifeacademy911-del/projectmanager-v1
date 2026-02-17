@@ -6,6 +6,8 @@ class AppConst {
   static double authTopPadding = 50;
   static EdgeInsets bodyPadding = EdgeInsets.symmetric(horizontal: 20);
   static Radius inputRadius = Radius.circular(10);
+  static Radius bodyRadius = Radius.circular(50);
+
   static InputBorder inputBorder = OutlineInputBorder(
     borderSide: BorderSide.none,
     borderRadius: BorderRadius.all(AppConst.inputRadius),
@@ -17,5 +19,6 @@ class AppConst {
   );
 
   static double H1 = 64;
+  static double h2 = 32;
   static double p = 20;
 }
