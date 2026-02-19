@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:projectmanager/view/pages/auth/login.dart';
+import 'package:projectmanager/common/guard/auth_guard.dart';
 import 'package:projectmanager/viewmodel/Authentication/auth_viewmodel.dart';
+import 'package:projectmanager/viewmodel/project/project_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:projectmanager/common/utils/navigator_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: '.env');
-  final Supabase supabase = await Supabase.initialize(
+  await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['ANON_KEY']!,
   );
-  final AuthViewmodel authviewmodel = AuthViewmodel(supabase);
 
   runApp(
-    ChangeNotifierProvider<AuthViewmodel>(
-      create: (_) => authviewmodel,
+    MultiProvider(
+      // Ici j'ajoute mes providers.
+      providers: [
+        ChangeNotifierProvider<AuthViewmodel>(create: (_) => AuthViewmodel()),
+        ChangeNotifierProvider(create: (_) => ProjectViewModel()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -30,10 +34,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [routeObserver],
       title: 'Project Manager',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: const Color(0xFFFF5900)),
-      home: const LoginPage(),
+      home: const AuthGuard(),
     );
   }
 }

@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projectmanager/common/const/const.dart';
 import 'package:projectmanager/common/theme/pallette.dart';
 import 'package:projectmanager/view/pages/auth/signup.dart';
+import 'package:projectmanager/view/pages/authenticated/projects.dart';
 import 'package:projectmanager/view/widgets/auth/form.dart';
 import 'package:projectmanager/viewmodel/Authentication/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +29,7 @@ class LoginPage extends StatelessWidget {
                 'Log In',
                 style: GoogleFonts.karla(
                   color: PalleteColor.white,
-                  fontSize: AppConst.H1,
+                  fontSize: AppConst.h1,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -38,8 +40,8 @@ class LoginPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: PalleteColor.white,
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(50),
-                      topRight: Radius.circular(50),
+                      topLeft: AppConst.bodyRadius,
+                      topRight: AppConst.bodyRadius,
                     ),
                   ),
                   width: double.infinity,
@@ -53,14 +55,23 @@ class LoginPage extends StatelessWidget {
                         passwordController: passwordController,
                         onSubmit: () async {
                           try {
-                            final user = await authviewmodel.login(
+                            await authviewmodel.login(
                               emailController.text,
                               passwordController.text,
                             );
-
-                            print(user?.email);
+                            if (context.mounted) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ProjectsPage();
+                                  },
+                                ),
+                              );
+                            }
                           } on Exception catch (e) {
-                            print(e.toString());
+                            if (kDebugMode) {
+                              print(e.toString());
+                            }
                           }
                         },
                       ),
