@@ -32,7 +32,7 @@ class SignupPage extends StatelessWidget {
                       'Sign Up',
                       style: AppFont.karla.copyWith(
                         color: PalleteColor.white,
-                        fontSize: AppConst.H1,
+                        fontSize: AppConst.h1,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

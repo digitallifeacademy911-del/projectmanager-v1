@@ -1,11 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:projectmanager/common/const/enum/project_statut.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:projectmanager/model/project.dart';
 
 class ProjectViewModel extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
-
-  ProjectViewModel();
 
   List<Project> _projects = [];
   bool _isLoading = false;
@@ -38,15 +38,20 @@ class ProjectViewModel extends ChangeNotifier {
       final response = await _supabase
           .from('projects')
           .select('*, user:profiles(*)')
-          .order('createdat', ascending: false) // Important pour garder l'ordre
+          .order('createdat', ascending: false)
           .range(from, to);
 
-      final List<Project> newProjects = (response as List)
-          .map((json) => Project.fromJson(json))
-          .toList();
+      List<Project> newProjects = (response as List).map((json) {
+        if (DateTime.parse(json['enddate']).compareTo(DateTime.now()) == -1 &&
+            ProjectStatut.statusOf(json['status']) != ProjectStatut.finished) {
+          debugPrint(json['id']);
+          setStatus(json['id'], ProjectStatut.late);
+        }
+        return Project.fromJson(json);
+      }).toList();
 
       if (newProjects.length < _pageSize) {
-        _hasNextPage = false; // On a atteint la fin
+        _hasNextPage = false; 
       }
 
       _projects.addAll(newProjects);
@@ -54,7 +59,8 @@ class ProjectViewModel extends ChangeNotifier {
       _errorMessage = null;
     } catch (e) {
       _errorMessage = "Failed to load projects: $e";
-      print(_errorMessage);
+      debugPrint(_errorMessage);
+      notifyListeners();
     } finally {
       _setLoading(false);
     }
@@ -68,22 +74,8 @@ class ProjectViewModel extends ChangeNotifier {
       return true;
     } catch (e) {
       _errorMessage = e.toString();
+      notifyListeners();
       return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<void> getProject(Project project) async {
-    _setLoading(true);
-    try {
-      final response = await _supabase
-          .from('projects')
-          .select('*, user:profiles(*)')
-          .eq('id', project.id!);
-      debugPrint(response.first.toString());
-    } catch (e) {
-      _errorMessage = e.toString();
     } finally {
       _setLoading(false);
     }
@@ -101,6 +93,7 @@ class ProjectViewModel extends ChangeNotifier {
       return true;
     } on Exception catch (e) {
       _errorMessage = e.toString();
+      notifyListeners();
       return false;
     } finally {
       _setLoading(false);
@@ -115,6 +108,23 @@ class ProjectViewModel extends ChangeNotifier {
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> setStatus(String id, ProjectStatut newStatus) async {
+    try {
+      await _supabase
+          .from('projects')
+          .update({'status': newStatus.value})
+          .eq("id", id);
+      await fetchProjects();
+    } on Exception catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
     }
   }
 

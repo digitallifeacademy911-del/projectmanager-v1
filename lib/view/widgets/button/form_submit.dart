@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:projectmanager/common/theme/pallette.dart'; // Using your palette
+import 'package:projectmanager/common/theme/pallette.dart';
 
 class FormSubmit extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget child;
-  final bool isLoading; // Added to handle Supabase request latency
+  final bool isLoading; 
   final Color? backgroundColor;
 
   const FormSubmit({
@@ -18,9 +18,9 @@ class FormSubmit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      height: 50,
       width: double.infinity,
       child: ElevatedButton(
-        // Disable button while loading or if onPressed is null
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: PalleteColor.backgroundColor,

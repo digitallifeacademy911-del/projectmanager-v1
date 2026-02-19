@@ -5,6 +5,7 @@ import 'package:projectmanager/viewmodel/Authentication/auth_viewmodel.dart';
 import 'package:projectmanager/viewmodel/project/project_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:projectmanager/common/utils/navigator_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,7 @@ void main() async {
 
   runApp(
     MultiProvider(
+      // Ici j'ajoute mes providers.
       providers: [
         ChangeNotifierProvider<AuthViewmodel>(create: (_) => AuthViewmodel()),
         ChangeNotifierProvider(create: (_) => ProjectViewModel()),
@@ -32,6 +34,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [routeObserver],
       title: 'Project Manager',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: const Color(0xFFFF5900)),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:projectmanager/model/user.dart';
 
@@ -34,7 +34,6 @@ class AuthViewmodel extends ChangeNotifier {
     }
   }
 
-  // Ici j'utilise une lambda expression pour effectuer la déconnexion
   Future<void> logout() async {
     try {
       await supabaseClient.auth.signOut();
@@ -45,6 +44,9 @@ class AuthViewmodel extends ChangeNotifier {
 
   Future<User?> getCurrentUser() async {
     final user = supabaseClient.auth.currentUser;
+    if (kDebugMode) {
+      print("supabase user : ${user!.toJson()}");
+    }
     return (user != null) ? User(email: user.email!, id: user.id) : null;
   }
 }
